@@ -1,0 +1,277 @@
+package TwitterApp;
+
+import GUI.telainicial;
+import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
+import javax.swing.JOptionPane;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
+
+
+public class TelaLogin extends javax.swing.JFrame {
+
+    JFXPanel javafxPanel;
+    WebView webComponent;
+    static String url;
+    static Twitter conexao;
+    static TelaLogin novo;
+    static RequestToken requestToken;
+
+    private String consumerKey = "EwcxsvSwWO94YRGpN55Bc01xG";
+    private String consumerSecret = "d6kYAfnyhxkoWFNH3SqqxkzZ3D7SURWM0MV5OCKPytJmfFVD10";
+
+    public String pegaurl() throws TwitterException {
+        String url;
+        Twitter twitter = new TwitterFactory().getInstance();
+        //Uma classe de fábrica para o Twitter. Uma instância dessa classe é completamente thread-safe e pode ser reutilizada e usada simultaneamente.
+        //Retorna uma instância associada à configuração ligada a esta fábrica.
+        conexao = twitter;
+        conexao.setOAuthConsumer(consumerKey, consumerSecret);
+        //Define a chave de consumidor OAuth eo segredo do consumidor.
+        requestToken = conexao.getOAuthRequestToken();
+        //Obtém um token de solicitação
+        url = requestToken.getAuthorizationURL();
+        //URL de autorização
+        //System.out.println(url);
+        return url;
+    }
+
+    public void conexao(String pin) {
+
+        AccessToken accessToken = null;
+
+        try {
+            accessToken = conexao.getOAuthAccessToken(requestToken, pin);
+            //Retorna um token de acesso associado a esta instância.
+            //Se nenhum token de acesso estiver associado a esta instância, isso irá recuperar um novo token de acesso.
+        } catch (TwitterException ex) {
+            //Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro ao obter o Token");
+        }
+        
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        /*Um construtor que pode ser usado para construir uma configuração
+        do twitter4j com as configurações desejadas. Esse construtor tem padrões 
+        válidos, de modo que o novo ConfigurationBuilder (). Build () criaria uma 
+        configuração utilizável. Esse construtor de configuração é útil para clientes
+        que desejam configurar o twitter4j em testes de unidade ou de bandeiras de linha 
+        de comando, por exemplo..*/
+            cb.setDebugEnabled(true)
+                .setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(accessToken.getToken())
+                .setOAuthAccessTokenSecret(accessToken.getTokenSecret());
+            
+        TwitterFactory factory = new TwitterFactory(cb.build());
+        conexao = factory.getInstance();
+        conexao.setOAuthAccessToken(accessToken);
+        JOptionPane.showMessageDialog(null, "CONECTADO");
+        this.dispose();
+    }
+
+    public TelaLogin() {
+        javafxPanel = new JFXPanel();
+        initComponents();
+        initSwingComponents();
+        try {
+            url = pegaurl();
+        } catch (TwitterException ex) {
+            JOptionPane.showMessageDialog(null, "Falha ", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        loadJavaFXScene(url);
+    }
+
+    private void initSwingComponents() {
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(javafxPanel);
+    }
+
+    private void loadJavaFXScene(String url) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                BorderPane borderPane = new BorderPane();
+                webComponent = new WebView();
+                /*O WebView é um Nó que gerencia um WebEngine
+                e exibe seu conteúdo. O WebEngine associado é criado 
+                automaticamente no momento da construção e não pode ser 
+                alterado posteriormente. O WebView manipula o mouse e alguns 
+                eventos de teclado e gerencia a rolagem automaticamente, portanto 
+                não há necessidade de colocá-la em um ScrollPane.*/
+
+                webComponent.getEngine().load(url);
+
+                borderPane.setCenter(webComponent);
+                Scene scene = new Scene(borderPane, 350, 219);
+                javafxPanel.setScene(scene);
+
+            }
+        });
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        mainPanel = new javax.swing.JPanel();
+        jTextFieldToken = new javax.swing.JTextField();
+        jButtonAutenticar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jButtonSair = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Login on Twitter for Java");
+        setResizable(false);
+        setSize(new java.awt.Dimension(800, 600));
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 364, Short.MAX_VALUE)
+        );
+
+        jButtonAutenticar.setText("Autenticar");
+        jButtonAutenticar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAutenticarActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Para permitir o aplicativo ter acesso à sua conta, faça Login e digite o Token:");
+
+        jButtonSair.setText("Sair");
+        jButtonSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSairActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextFieldToken, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonAutenticar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonSair)
+                        .addGap(0, 150, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextFieldToken, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonAutenticar)
+                    .addComponent(jButtonSair))
+                .addGap(6, 6, 6))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutenticarActionPerformed
+        if ("".equals(jTextFieldToken.getText())) {
+            JOptionPane.showMessageDialog(null, "Digite um Token válido!");
+        } else {
+            /*
+            conexao(jTextFieldToken.getText());
+            Home home = null;
+            try {
+                home = new Home(conexao);
+                home.setVisible(true);
+            } catch (TwitterException ex) {
+                //Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, "Alguma coisa falhou...");
+            }
+            */
+             conexao(jTextFieldToken.getText());
+            telainicial menu = null;
+            menu = new telainicial(conexao);
+            menu.setVisible(true);
+        }
+    }//GEN-LAST:event_jButtonAutenticarActionPerformed
+
+    private void jButtonSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSairActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jButtonSairActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TelaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(TelaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(TelaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TelaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                novo = new TelaLogin();
+                novo.setLocationRelativeTo(null);
+                novo.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAutenticar;
+    private javax.swing.JButton jButtonSair;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField jTextFieldToken;
+    private javax.swing.JPanel mainPanel;
+    // End of variables declaration//GEN-END:variables
+}

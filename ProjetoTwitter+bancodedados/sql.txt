@@ -1,0 +1,30 @@
+CRIAR BANCO
+create database projeto;
+
+CRIAR TABELAS
+CREATE TABLE user (
+codigo int ,
+iduser double NOT NULL,
+UsuarioName LONGTEXT NOT NULL,
+ScreenName varchar(100) NOT NULL,
+local varchar(100) NOT NULL,
+PRIMARY KEY (codigo)
+);
+
+CREATE TABLE tweets (
+codigotweets int NOT NULL,
+idtweets double NOT NULL,
+status LONGTEXT NOT NULL,
+data LONGTEXT NOT NULL,
+hashtag varchar(100) NOT NULL,
+codigouser int NOT NULL,
+PRIMARY KEY (codigotweets),
+FOREIGN KEY(codigouser) REFERENCES user (codigo)
+);
+
+CODIFICACAO 
+ ALTER DATABASE projeto CHARSET = utf8 COLLATE = utf8_general_ci;
+
+#ForcaChape
+#CCXP2016
+#TWD7naFOX
